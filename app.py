@@ -33,8 +33,8 @@ def create_app(config_name=None):
         return {'cart_count': 0}
 
     # Ensure upload folder exists
-    upload_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
-    os.makedirs(upload_path, exist_ok=True)
+    # upload_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
+    # os.makedirs(upload_path, exist_ok=True)
 
     # Register blueprints
     from blueprints.auth import auth
