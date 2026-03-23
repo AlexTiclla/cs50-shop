@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Iniciar sesión — CS50 Shop{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5 col-lg-4">
+    <div class="auth-card">
+      <h2>Bienvenido</h2>
+      <form method="POST">
+        <div class="mb-3">
+          <label for="username" class="form-label">Usuario</label>
+          <input type="text" id="username" name="username" class="form-control"
+                 placeholder="Tu nombre de usuario"
+                 required autofocus autocomplete="username">
+        </div>
+        <div class="mb-4">
+          <label for="password" class="form-label">Contraseña</label>
+          <input type="password" id="password" name="password" class="form-control"
+                 placeholder="••••••••"
+                 required autocomplete="current-password">
+        </div>
+        <div class="mb-4 d-flex align-items-center justify-content-between">
+          <div class="form-check mb-0">
+            <input type="checkbox" id="remember" name="remember" class="form-check-input">
+            <label for="remember" class="form-check-label" style="font-size: 0.85rem;">Recordarme</label>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-dark w-100 py-2">Entrar</button>
+      </form>
+      <div class="auth-divider">o</div>
+      <p class="text-center mb-0" style="font-size: 0.875rem; color: var(--warm-gray);">
+        ¿No tienes cuenta?
+        <a href="{{ url_for('auth.register') }}" style="color: var(--espresso); font-weight: 600;">Regístrate gratis</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

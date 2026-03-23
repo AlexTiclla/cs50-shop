@@ -1,0 +1,26 @@
+<div class="col-12 col-md-3 col-lg-2" style="min-width: 0;">
+  <div class="seller-sidebar">
+    <div class="sidebar-header">
+      <i class="bi bi-grid-fill"></i> Panel Vendedor
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-link {{ 'active' if request.endpoint == 'seller.dashboard' }}"
+         href="{{ url_for('seller.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Dashboard
+      </a>
+      <a class="sidebar-link {{ 'active' if 'seller.product' in request.endpoint }}"
+         href="{{ url_for('seller.products') }}">
+        <i class="bi bi-box-seam"></i> Productos
+      </a>
+      <a class="sidebar-link {{ 'active' if 'seller.categor' in request.endpoint }}"
+         href="{{ url_for('seller.categories') }}">
+        <i class="bi bi-tags"></i> Categorías
+      </a>
+      <hr class="sidebar-divider">
+      <a class="sidebar-link {{ 'active' if request.endpoint == 'seller.seller_new' }}"
+         href="{{ url_for('seller.seller_new') }}">
+        <i class="bi bi-person-plus"></i> Crear vendedor
+      </a>
+    </nav>
+  </div>
+</div>

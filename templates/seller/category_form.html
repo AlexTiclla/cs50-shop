@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ 'Editar' if category else 'Nueva' }} Categoría — CS50 Shop{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  {% include 'seller/_sidebar.html' %}
+
+  <div class="col-md-9 col-lg-10" style="min-width: 0;">
+    <div class="d-flex align-items-center mb-5">
+      <a href="{{ url_for('seller.categories') }}" class="btn btn-outline-secondary me-3" style="padding: 0.4rem 0.6rem;">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <h2 class="mb-0" style="font-size: 1.75rem;">{{ 'Editar' if category else 'Nueva' }} Categoría</h2>
+    </div>
+
+    <div class="card shadow-sm" style="max-width: 520px;">
+      <div class="card-body p-4">
+        <form method="POST" enctype="multipart/form-data">
+          <div class="mb-4">
+            <label for="name" class="form-label">Nombre <span style="color: var(--terracotta);">*</span></label>
+            <input type="text" id="name" name="name" class="form-control"
+                   placeholder="Nombre de la categoría"
+                   value="{{ category.name if category else '' }}" required autofocus>
+          </div>
+
+          <div class="mb-4">
+            <label for="background_image" class="form-label">Imagen de fondo para PDF</label>
+            {% if category and category.background_image_url %}
+              <div class="mb-2">
+                <img src="{{ category.background_image_url }}" alt="Fondo actual"
+                     style="width: 100%; max-height: 140px; object-fit: cover; border-radius: 6px; border: 1px solid #dee2e6;">
+                <small class="text-muted d-block mt-1">Imagen actual. Sube una nueva para reemplazarla.</small>
+              </div>
+            {% endif %}
+            <input type="file" id="background_image" name="background_image"
+                   class="form-control" accept="image/*">
+            <div class="form-text">Se usará como fondo al exportar productos de esta categoría en PDF.</div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-dark px-4">
+              {{ 'Guardar cambios' if category else 'Crear categoría' }}
+            </button>
+            <a href="{{ url_for('seller.categories') }}" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}403 — Acceso denegado{% endblock %}
+
+{% block content %}
+<div class="error-page position-relative">
+  <span class="error-code">403</span>
+  <div class="error-content">
+    <i class="bi bi-lock" style="color: var(--warm-gray);"></i>
+    <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Acceso denegado</h2>
+    <p class="text-muted" style="max-width: 360px; margin: 0 auto 1.5rem;">
+      No tienes permiso para acceder a esta página.
+    </p>
+    <a href="{{ url_for('shop.index') }}" class="btn btn-dark px-4 py-2">
+      <i class="bi bi-house me-2"></i>Volver al inicio
+    </a>
+  </div>
+</div>
+{% endblock %}

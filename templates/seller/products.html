@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+
+{% block title %}Productos — CS50 Shop{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  {% include 'seller/_sidebar.html' %}
+
+  <div class="col-md-9 col-lg-10" style="min-width: 0;">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+      <h2 class="mb-0" style="font-size: 1.75rem;">Productos</h2>
+      <a href="{{ url_for('seller.product_new') }}" class="btn btn-dark">
+        <i class="bi bi-plus me-1"></i>Nuevo producto
+      </a>
+    </div>
+
+    {% if products %}
+    <div class="card shadow-sm">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table mb-0 align-middle">
+            <thead>
+              <tr>
+                <th style="padding-left: 1.25rem; width: 60px;"></th>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Precio</th>
+                <th>Costo</th>
+                <th>Stock</th>
+                <th>Estado</th>
+                <th class="text-end" style="padding-right: 1.25rem;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in products %}
+              <tr>
+                <td style="padding-left: 1.25rem;">
+                  {% if p.image_url %}
+                  <img src="{{ p.image_url }}"
+                       alt="{{ p.name }}" class="rounded-2"
+                       style="width:44px;height:44px;object-fit:cover;border:1px solid var(--border);">
+                  {% else %}
+                  <div class="rounded-2 d-flex align-items-center justify-content-center"
+                       style="width:44px;height:44px;background:var(--cream-dark);">
+                    <i class="bi bi-image" style="color:var(--warm-gray);font-size:0.9rem;"></i>
+                  </div>
+                  {% endif %}
+                </td>
+                <td class="fw-semibold" style="font-size: 0.9rem;">{{ p.name }}</td>
+                <td class="text-muted" style="font-size: 0.875rem;">{{ p.category.name if p.category else '—' }}</td>
+                <td style="font-family: 'Playfair Display', serif; font-size: 0.9rem;">Bs{{ p.price }}</td>
+                <td class="text-muted" style="font-size: 0.875rem;">{{ 'Bs' + p.cost_price|string if p.cost_price else '—' }}</td>
+                <td style="font-size: 0.875rem;">{{ p.stock }}</td>
+                <td>
+                  {% if p.is_active %}
+                  <span class="badge bg-success">Activo</span>
+                  {% else %}
+                  <span class="badge bg-secondary">Inactivo</span>
+                  {% endif %}
+                </td>
+                <td class="text-end" style="padding-right: 1.25rem;">
+                  <div class="btn-group btn-group-sm">
+                    <a href="{{ url_for('seller.product_edit', id=p.id) }}"
+                       class="btn btn-outline-secondary" title="Editar">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                    <a href="{{ url_for('seller.product_pdf', id=p.id) }}"
+                       class="btn btn-outline-secondary" title="Exportar PDF">
+                      <i class="bi bi-file-pdf"></i>
+                    </a>
+                    <button type="button" class="btn btn-outline-secondary" title="Compartir"
+                            onclick="openShareModal('{{ p.name|e }}', '{{ request.url_root }}product/{{ p.slug }}')">
+                      <i class="bi bi-share"></i>
+                    </button>
+                    <form action="{{ url_for('seller.product_toggle', id=p.id) }}" method="POST" class="d-inline">
+                      <button type="submit" class="btn btn-outline-warning" title="Toggle activo">
+                        <i class="bi bi-{{ 'pause' if p.is_active else 'play' }}"></i>
+                      </button>
+                    </form>
+                    <form action="{{ url_for('seller.product_delete', id=p.id) }}" method="POST" class="d-inline"
+                          onsubmit="return confirm('¿Eliminar {{ p.name }}? Esta acción no se puede deshacer.')">
+                      <button type="submit" class="btn btn-outline-danger" title="Eliminar">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <i class="bi bi-box-seam"></i>
+      <h4>No hay productos</h4>
+      <p>Crea tu primer producto para empezar a vender.</p>
+      <a href="{{ url_for('seller.product_new') }}" class="btn btn-dark">Crear primer producto</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- Share Modal -->
+<div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 380px;">
+    <div class="modal-content" style="border-radius: 14px; border: none; box-shadow: 0 8px 32px rgba(0,0,0,0.14);">
+      <div class="modal-header border-0 pb-0 px-4 pt-4">
+        <div>
+          <h6 class="modal-title fw-semibold mb-0" id="shareModalLabel">Compartir producto</h6>
+          <p class="text-muted mb-0" style="font-size: 0.8rem;" id="shareProductName"></p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body px-4 pt-3 pb-4">
+
+        <div class="row g-3 mb-3">
+
+          <!-- WhatsApp -->
+          <div class="col-4 text-center">
+            <a id="shareWhatsapp" href="#" target="_blank" rel="noopener"
+               class="share-pill d-flex flex-column align-items-center gap-1 text-decoration-none py-3 px-2 rounded-3"
+               style="background:#e8f8ee; color:#128c7e;">
+              <i class="bi bi-whatsapp" style="font-size:1.6rem;"></i>
+              <span style="font-size:0.72rem; font-weight:600;">WhatsApp</span>
+            </a>
+          </div>
+
+          <!-- Facebook -->
+          <div class="col-4 text-center">
+            <a id="shareFacebook" href="#" target="_blank" rel="noopener"
+               class="share-pill d-flex flex-column align-items-center gap-1 text-decoration-none py-3 px-2 rounded-3"
+               style="background:#e8eef8; color:#1877f2;">
+              <i class="bi bi-facebook" style="font-size:1.6rem;"></i>
+              <span style="font-size:0.72rem; font-weight:600;">Facebook</span>
+            </a>
+          </div>
+
+          <!-- Messenger -->
+          <div class="col-4 text-center">
+            <a id="shareMessenger" href="#" target="_blank" rel="noopener"
+               class="share-pill d-flex flex-column align-items-center gap-1 text-decoration-none py-3 px-2 rounded-3"
+               style="background:#eeeaf8; color:#0084ff;">
+              <i class="bi bi-messenger" style="font-size:1.6rem;"></i>
+              <span style="font-size:0.72rem; font-weight:600;">Messenger</span>
+            </a>
+          </div>
+
+          <!-- Instagram (copy link) -->
+          <div class="col-4 text-center">
+            <button onclick="copyForInstagram()"
+               class="share-pill d-flex flex-column align-items-center gap-1 py-3 px-2 rounded-3 border-0 w-100"
+               style="background:#fce8f3; color:#c13584; cursor:pointer;">
+              <i class="bi bi-instagram" style="font-size:1.6rem;"></i>
+              <span style="font-size:0.72rem; font-weight:600;">Instagram</span>
+            </button>
+          </div>
+
+          <!-- X / Twitter -->
+          <div class="col-4 text-center">
+            <a id="shareTwitter" href="#" target="_blank" rel="noopener"
+               class="share-pill d-flex flex-column align-items-center gap-1 text-decoration-none py-3 px-2 rounded-3"
+               style="background:#f0f0f0; color:#000000;">
+              <i class="bi bi-twitter-x" style="font-size:1.6rem;"></i>
+              <span style="font-size:0.72rem; font-weight:600;">X / Twitter</span>
+            </a>
+          </div>
+
+          <!-- Telegram -->
+          <div class="col-4 text-center">
+            <a id="shareTelegram" href="#" target="_blank" rel="noopener"
+               class="share-pill d-flex flex-column align-items-center gap-1 text-decoration-none py-3 px-2 rounded-3"
+               style="background:#e4f3fb; color:#229ed9;">
+              <i class="bi bi-telegram" style="font-size:1.6rem;"></i>
+              <span style="font-size:0.72rem; font-weight:600;">Telegram</span>
+            </a>
+          </div>
+
+        </div>
+
+        <!-- Copy link row -->
+        <div class="input-group input-group-sm">
+          <input type="text" id="shareLinkInput" class="form-control" readonly
+                 style="font-size:0.78rem; border-radius: 8px 0 0 8px;">
+          <button class="btn btn-dark" type="button" onclick="copyShareLink()"
+                  style="border-radius: 0 8px 8px 0; font-size:0.8rem;">
+            <i class="bi bi-clipboard" id="copyIcon"></i>
+          </button>
+        </div>
+        <div id="copyFeedback" class="text-success mt-1" style="font-size:0.75rem; min-height:1rem;"></div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .share-pill { transition: filter 0.15s; }
+  .share-pill:hover { filter: brightness(0.93); }
+</style>
+
+<script>
+  let _shareUrl = '';
+
+  function openShareModal(name, url) {
+    _shareUrl = url;
+    const encoded = encodeURIComponent(url);
+    const nameEncoded = encodeURIComponent(name + ' — ' + url);
+
+    document.getElementById('shareProductName').textContent = name;
+    document.getElementById('shareLinkInput').value = url;
+    document.getElementById('copyFeedback').textContent = '';
+    document.getElementById('copyIcon').className = 'bi bi-clipboard';
+
+    document.getElementById('shareWhatsapp').href =
+      'https://wa.me/?text=' + nameEncoded;
+    document.getElementById('shareFacebook').href =
+      'https://www.facebook.com/sharer/sharer.php?u=' + encoded;
+    document.getElementById('shareMessenger').href =
+      'fb-messenger://share/?link=' + encoded;
+    document.getElementById('shareTwitter').href =
+      'https://twitter.com/intent/tweet?url=' + encoded + '&text=' + encodeURIComponent(name);
+    document.getElementById('shareTelegram').href =
+      'https://t.me/share/url?url=' + encoded + '&text=' + encodeURIComponent(name);
+
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('shareModal')).show();
+  }
+
+  function copyShareLink() {
+    navigator.clipboard.writeText(_shareUrl).then(() => {
+      document.getElementById('copyFeedback').textContent = 'Enlace copiado.';
+      document.getElementById('copyIcon').className = 'bi bi-check2';
+      setTimeout(() => {
+        document.getElementById('copyFeedback').textContent = '';
+        document.getElementById('copyIcon').className = 'bi bi-clipboard';
+      }, 2000);
+    });
+  }
+
+  function copyForInstagram() {
+    navigator.clipboard.writeText(_shareUrl).then(() => {
+      document.getElementById('copyFeedback').textContent = 'Enlace copiado — pégalo en Instagram.';
+      document.getElementById('copyIcon').className = 'bi bi-check2';
+      setTimeout(() => {
+        document.getElementById('copyFeedback').textContent = '';
+        document.getElementById('copyIcon').className = 'bi bi-clipboard';
+      }, 2500);
+    });
+  }
+</script>
+{% endblock modals %}

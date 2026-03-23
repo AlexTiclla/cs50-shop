@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Carrito — CS50 Shop{% endblock %}
+
+{% block content %}
+<h1 class="mb-5" style="font-size: 2rem;">Tu carrito</h1>
+
+{% if items %}
+<div class="row g-4 align-items-start">
+  <!-- Items -->
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-body p-0">
+        <table class="table mb-0 align-middle">
+          <thead>
+            <tr>
+              <th style="padding-left: 1.25rem;">Producto</th>
+              <th class="text-center">Cantidad</th>
+              <th class="text-end">Subtotal</th>
+              <th style="padding-right: 1.25rem;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+            <tr>
+              <td style="padding-left: 1.25rem;">
+                <div class="d-flex align-items-center gap-3">
+                  {% if item.product.image_url %}
+                  <img src="{{ item.product.image_url }}"
+                       alt="{{ item.product.name }}" class="rounded-2"
+                       style="width:56px;height:56px;object-fit:cover;border: 1px solid var(--border);">
+                  {% else %}
+                  <div class="rounded-2 d-flex align-items-center justify-content-center"
+                       style="width:56px;height:56px;background:var(--cream-dark);">
+                    <i class="bi bi-image" style="color: var(--warm-gray);"></i>
+                  </div>
+                  {% endif %}
+                  <div>
+                    <a href="{{ url_for('shop.product_detail', slug=item.product.slug) }}"
+                       class="fw-semibold" style="color: var(--text); font-size: 0.9rem;">{{ item.product.name }}</a>
+                    <div class="text-muted" style="font-size: 0.8rem;">Bs{{ item.product.price }} c/u</div>
+                  </div>
+                </div>
+              </td>
+              <td class="text-center">
+                <form action="{{ url_for('shop.cart_update') }}" method="POST" class="d-inline">
+                  <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                  <input type="number" name="quantity" value="{{ item.quantity }}"
+                         min="1" max="99" class="form-control form-control-sm text-center cart-qty"
+                         style="width: 68px; display: inline-block;">
+                </form>
+              </td>
+              <td class="text-end fw-semibold" style="font-family: 'Playfair Display', serif;">
+                Bs{{ "%.2f"|format(item.subtotal) }}
+              </td>
+              <td class="text-end" style="padding-right: 1.25rem;">
+                <form action="{{ url_for('shop.cart_remove') }}" method="POST">
+                  <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                  <button type="submit" class="btn btn-sm btn-outline-danger" style="padding: 0.3rem 0.5rem;">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h5 class="mb-4" style="font-family: 'Playfair Display', serif; font-size: 1.15rem;">Resumen del pedido</h5>
+
+        <div class="d-flex justify-content-between mb-2" style="font-size: 0.875rem; color: var(--warm-gray);">
+          <span>Subtotal</span>
+          <span>Bs{{ "%.2f"|format(total) }}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2" style="font-size: 0.875rem; color: var(--warm-gray);">
+          <span>Envío</span>
+          <span>A coordinar</span>
+        </div>
+
+        <hr style="border-color: var(--border); margin: 1rem 0;">
+
+        <div class="d-flex justify-content-between mb-4">
+          <span class="fw-semibold">Total</span>
+          <span style="font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700;">
+            Bs{{ "%.2f"|format(total) }}
+          </span>
+        </div>
+
+        <a href="{{ url_for('shop.cart_whatsapp') }}"
+           class="btn btn-success w-100 py-2 mb-2">
+          <i class="bi bi-whatsapp me-2"></i>Enviar por WhatsApp
+        </a>
+        <a href="{{ url_for('shop.index') }}" class="btn btn-outline-secondary w-100 btn-sm">
+          <i class="bi bi-arrow-left me-1"></i>Seguir comprando
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% else %}
+<div class="empty-state">
+  <i class="bi bi-bag-x"></i>
+  <h4>Tu carrito está vacío</h4>
+  <p>Agrega productos desde el catálogo.</p>
+  <a href="{{ url_for('shop.index') }}" class="btn btn-dark">
+    <i class="bi bi-bag me-1"></i>Ver catálogo
+  </a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+{% endblock %}

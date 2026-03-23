@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard — CS50 Shop{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  {% include 'seller/_sidebar.html' %}
+
+  <div class="col-12 col-md-9 col-lg-10" style="min-width: 0;">
+    <h2 class="mb-4" style="font-size: 1.75rem;">Dashboard</h2>
+
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-sm-4">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: var(--cream-dark); color: var(--espresso);">
+            <i class="bi bi-box-seam"></i>
+          </div>
+          <div class="stat-value">{{ total_products }}</div>
+          <div class="stat-label">Total productos</div>
+        </div>
+      </div>
+      <div class="col-6 col-sm-4">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: var(--forest-light); color: var(--forest);">
+            <i class="bi bi-check-circle"></i>
+          </div>
+          <div class="stat-value" style="color: var(--forest);">{{ active_products }}</div>
+          <div class="stat-label">Activos</div>
+        </div>
+      </div>
+      <div class="col-6 col-sm-4">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: var(--terra-light); color: var(--terracotta);">
+            <i class="bi bi-tags"></i>
+          </div>
+          <div class="stat-value" style="color: var(--terracotta);">{{ total_categories }}</div>
+          <div class="stat-label">Categorías</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent products -->
+    <div class="card shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0" style="font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600;">Últimos productos</h5>
+        <a href="{{ url_for('seller.product_new') }}" class="btn btn-dark btn-sm">
+          <i class="bi bi-plus me-1"></i>Nuevo
+        </a>
+      </div>
+
+      {% if recent_products %}
+
+      <!-- Mobile list (< md) -->
+      <div class="d-md-none">
+        {% for p in recent_products %}
+        <div class="d-flex align-items-center gap-3 px-3 py-3 {% if not loop.last %}border-bottom{% endif %}">
+          <div style="min-width: 0; flex: 1;">
+            <div class="fw-semibold text-truncate" style="font-size: 0.9rem;">{{ p.name }}</div>
+            <div style="font-family: 'Playfair Display', serif; font-size: 0.88rem; color: var(--espresso);">Bs{{ p.price }}</div>
+          </div>
+          {% if p.is_active %}
+          <span class="badge bg-success flex-shrink-0">Activo</span>
+          {% else %}
+          <span class="badge bg-secondary flex-shrink-0">Inactivo</span>
+          {% endif %}
+          <a href="{{ url_for('seller.product_edit', id=p.id) }}"
+             class="btn btn-sm btn-outline-secondary flex-shrink-0"
+             style="padding: 0.3rem 0.55rem;">
+            <i class="bi bi-pencil"></i>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Desktop table (>= md) -->
+      <div class="d-none d-md-block">
+        <table class="table mb-0 align-middle">
+          <thead>
+            <tr>
+              <th style="padding-left: 1.25rem;">Nombre</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Estado</th>
+              <th style="padding-right: 1.25rem;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in recent_products %}
+            <tr>
+              <td class="fw-semibold" style="padding-left: 1.25rem; font-size: 0.9rem;">{{ p.name }}</td>
+              <td style="font-family: 'Playfair Display', serif; font-size: 0.9rem;">Bs{{ p.price }}</td>
+              <td class="text-muted" style="font-size: 0.875rem;">{{ p.stock }}</td>
+              <td>
+                {% if p.is_active %}
+                <span class="badge bg-success">Activo</span>
+                {% else %}
+                <span class="badge bg-secondary">Inactivo</span>
+                {% endif %}
+              </td>
+              <td style="padding-right: 1.25rem;" class="text-end">
+                <a href="{{ url_for('seller.product_edit', id=p.id) }}"
+                   class="btn btn-sm btn-outline-secondary">Editar</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% else %}
+      <div class="empty-state">
+        <i class="bi bi-box-seam"></i>
+        <h4>Sin productos aún</h4>
+        <p>Crea tu primer producto para comenzar.</p>
+        <a href="{{ url_for('seller.product_new') }}" class="btn btn-dark btn-sm">Crear producto</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

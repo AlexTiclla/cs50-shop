@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Categorías — CS50 Shop{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  {% include 'seller/_sidebar.html' %}
+
+  <div class="col-md-9 col-lg-10" style="min-width: 0;">
+    <div class="d-flex justify-content-between align-items-center mb-4 mb-md-5">
+      <h2 class="mb-0" style="font-size: 1.75rem;">Categorías</h2>
+      <a href="{{ url_for('seller.category_new') }}" class="btn btn-dark btn-sm">
+        <i class="bi bi-plus me-1"></i><span class="d-none d-sm-inline">Nueva categoría</span><span class="d-sm-none">Nueva</span>
+      </a>
+    </div>
+
+    {% if categories %}
+    <div class="card shadow-sm">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table mb-0 align-middle">
+            <thead>
+              <tr>
+                <th style="padding-left: 1.25rem;">Nombre</th>
+                <th class="d-none d-md-table-cell">Slug</th>
+                <th>Productos</th>
+                <th class="text-end" style="padding-right: 1.25rem;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for cat in categories %}
+              <tr>
+                <td class="fw-semibold" style="padding-left: 1.25rem; font-size: 0.9rem;">{{ cat.name }}</td>
+                <td class="d-none d-md-table-cell"><code>{{ cat.slug }}</code></td>
+                <td style="font-size: 0.875rem; color: var(--warm-gray);">{{ cat.products|length }}</td>
+                <td class="text-end" style="padding-right: 1.25rem; white-space: nowrap;">
+                  <a href="{{ url_for('seller.category_edit', id=cat.id) }}"
+                     class="btn btn-sm btn-outline-secondary me-1" title="Editar">
+                    <i class="bi bi-pencil"></i><span class="d-none d-sm-inline ms-1">Editar</span>
+                  </a>
+                  <form action="{{ url_for('seller.category_delete', id=cat.id) }}"
+                        method="POST" class="d-inline"
+                        onsubmit="return confirm('¿Eliminar categoría {{ cat.name }}?')">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <i class="bi bi-tags"></i>
+      <h4>No hay categorías</h4>
+      <p>Organiza tus productos creando categorías.</p>
+      <a href="{{ url_for('seller.category_new') }}" class="btn btn-dark">Crear primera categoría</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

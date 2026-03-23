@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Vendedor — CS50 Shop{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  {% include 'seller/_sidebar.html' %}
+
+  <div class="col-md-9 col-lg-10" style="min-width: 0;">
+    <div class="d-flex align-items-center mb-5">
+      <a href="{{ url_for('seller.dashboard') }}" class="btn btn-outline-secondary me-3" style="padding: 0.4rem 0.6rem;">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <h2 class="mb-0" style="font-size: 1.75rem;">Crear cuenta vendedor</h2>
+    </div>
+
+    <div class="card shadow-sm" style="max-width: 440px;">
+      <div class="card-body p-4">
+        <form method="POST">
+          <div class="mb-3">
+            <label for="username" class="form-label">Usuario <span style="color: var(--terracotta);">*</span></label>
+            <input type="text" id="username" name="username" class="form-control"
+                   placeholder="Nombre de usuario"
+                   required autofocus autocomplete="off">
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email <span style="color: var(--terracotta);">*</span></label>
+            <input type="email" id="email" name="email" class="form-control"
+                   placeholder="correo@ejemplo.com"
+                   required autocomplete="off">
+          </div>
+          <div class="mb-4">
+            <label for="password" class="form-label">Contraseña <span style="color: var(--terracotta);">*</span></label>
+            <input type="password" id="password" name="password" class="form-control"
+                   placeholder="Mínimo 8 caracteres"
+                   required minlength="8">
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-dark px-4">Crear vendedor</button>
+            <a href="{{ url_for('seller.dashboard') }}" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
